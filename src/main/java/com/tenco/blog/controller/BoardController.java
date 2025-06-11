@@ -1,11 +1,34 @@
 package com.tenco.blog.controller;
 
+import com.tenco.blog.repository.BoardNativeRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
+@RequiredArgsConstructor
 @Controller
 public class BoardController {
+
+    // 의존성 주입: 스프링이 BoardNativeRepository 객체를 자동으로 주입
+    private final BoardNativeRepository boardNativeRepository;
+
+    // @PostMapping: HTTP POST 요청을 처리
+    // 폼에서 제출된 데이터를 받아서 처리
+    @PostMapping("/board/save")
+    public String save(String title, String content, String username){
+        // 폼의 name 속성과 매개변수명이 일치하면 자동으로 값이 바인딩됨
+        // name="title" → String title로 자동 매핑
+
+        // Repository를 통해 데이터베이스에 저장
+        boardNativeRepository.save(title, content, username);
+
+        // redirect: 저장 후 메인 페이지로 이동
+        // POST 요청 후 redirect로 PRG(Post-Redirect-Get) 패턴 구현
+        return "redirect:/";
+    }
+
 
     // @GetMapping에 배열로 여러 경로를 지정 가능
     // "/" 또는 "/index" 둘 다 같은 메서드를 실행함
@@ -32,5 +55,7 @@ public class BoardController {
         // 실제로는 이 id로 데이터베이스에서 게시글을 조회해야 함
         return "board/detail";
     }
+
+
 }
 
