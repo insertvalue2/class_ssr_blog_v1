@@ -56,16 +56,24 @@ public class BoardController {
         return "board/save-form";
     }
 
-    // @PathVariable: URL 경로의 일부를 변수로 받아오는 어노테이션
-    // {id} 부분이 실제 숫자로 치환되어 id 매개변수로 전달됨
-    // 예: /board/1 → id=1, /board/100 → id=100
+    // 프로젝트 내에서 동일한 URL 매핑을 설정하면 오류 발생 (동일한 주소 설계)
+    // 게시글 상세보기: PathVariable을 사용한 동적 URL 처리
     @GetMapping("/board/{id}")
-    public String detail(@PathVariable(name = "id") Integer id) {
-        // URL에서 받은 id 값을 사용해서 특정 게시글 상세보기
-        // 실제로는 이 id로 데이터베이스에서 게시글을 조회해야 함
+    public String detail(@PathVariable(name = "id") Integer id, HttpServletRequest request) {
+
+        // Integer 타입으로 자동 변환됨 (Spring의 타입 컨버전)
+        // 숫자가 아닌 값이 들어오면 400 Bad Request 에러 발생
+
+        // Repository에서 해당 ID의 게시글 조회
+        Board board = boardNativeRepository.findById(id);
+
+        // 조회된 게시글을 뷰에 전달
+        // "board"라는 이름으로 템플릿에서 사용 가능
+        request.setAttribute("board", board);
+
+        // board 폴더의 detail.html 템플릿 렌더링
         return "board/detail";
     }
-
 
 }
 

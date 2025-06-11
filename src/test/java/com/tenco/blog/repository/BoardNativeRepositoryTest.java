@@ -68,4 +68,29 @@ public class BoardNativeRepositoryTest {
         Assertions.assertThat(boardList).isEmpty();
         // 또는 Assertions.assertThat(boardList.size()).isEqualTo(0);
     }
+
+    // 단건 조회 테스트: 특정 ID로 게시글 조회 기능 검증
+    @Test
+    public void findById_test(){
+        // given: 테스트할 게시글 ID 준비
+        // data.sql에 의해 id=1인 게시글이 존재한다고 가정
+        int id = 1;
+
+        // when: findById 메서드 실행
+        Board board = boardNativeRepository.findById(id);
+
+        // 디버깅용 출력 (선택사항)
+        // System.out.println("findById_test "+board);
+
+        // then: 조회된 게시글의 내용이 예상과 일치하는지 검증
+        // data.sql의 첫 번째 게시글 데이터와 비교
+        Assertions.assertThat(board.getTitle()).isEqualTo("제목1");
+        Assertions.assertThat(board.getContent()).isEqualTo("내용1");
+        Assertions.assertThat(board.getUsername()).isEqualTo("ssar");
+
+        // 추가 검증: 객체가 null이 아닌지 확인
+        Assertions.assertThat(board).isNotNull();
+        Assertions.assertThat(board.getId()).isEqualTo(1);
+    }
+
 }

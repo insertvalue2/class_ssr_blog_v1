@@ -52,4 +52,20 @@ public class BoardNativeRepository {
         // order by id desc: 최신글이 위로 오도록 내림차순 정렬
         return query.getResultList();
     }
+
+    // 특정 ID로 게시글 단건 조회
+    public Board findById(int id) {
+        // WHERE 조건을 사용한 단건 조회 쿼리
+        // 기본키(Primary Key)를 사용한 조회는 가장 빠른 검색 방법
+        Query query = em.createNativeQuery("select * from board_tb where id = ?", Board.class);
+
+        // 파라미터 바인딩: SQL Injection 방지
+        // 직접 문자열을 연결하지 않고 ?를 사용하여 안전하게 값 전달
+        query.setParameter(1, id);
+
+        // getSingleResult(): 단일 결과만 반환하는 메서드
+        // 주의: 결과가 없으면 NoResultException, 결과가 2개 이상이면 NonUniqueResultException 발생
+        // 실무에서는 try-catch 또는 Optional을 사용한 예외 처리 필요
+        return (Board) query.getSingleResult();
+    }
 }
