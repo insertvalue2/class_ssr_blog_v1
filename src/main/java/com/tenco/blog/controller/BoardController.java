@@ -1,11 +1,15 @@
 package com.tenco.blog.controller;
 
+import com.tenco.blog.model.Board;
 import com.tenco.blog.repository.BoardNativeRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
@@ -30,12 +34,18 @@ public class BoardController {
     }
 
 
-    // @GetMapping에 배열로 여러 경로를 지정 가능
-    // "/" 또는 "/index" 둘 다 같은 메서드를 실행함
-    // 메인 페이지는 보통 여러 경로로 접근 가능하게 설정
-    @GetMapping({"/", "/index"} )
-    public String index() {
-        // 메인 페이지(홈페이지)를 보여주는 뷰 반환
+    // 메인 페이지: 게시글 목록 보기
+    // Model 클래스 대신 HttpServletRequest 사용해 보기
+    @GetMapping("/")
+    public String index(HttpServletRequest request) {
+        // Repository에서 모든 게시글 조회
+        List<Board> boardList = boardNativeRepository.findAll();
+
+        // HttpServletRequest를 사용해서 뷰에 데이터 전달
+        // "boardList"라는 이름으로 템플릿에서 사용 가능
+        // Model 객체를 사용하는 방법도 있음: Model model → model.addAttribute()
+        request.setAttribute("boardList", boardList);
+
         return "index";
     }
 
@@ -50,7 +60,7 @@ public class BoardController {
     // {id} 부분이 실제 숫자로 치환되어 id 매개변수로 전달됨
     // 예: /board/1 → id=1, /board/100 → id=100
     @GetMapping("/board/{id}")
-    public String detail(@PathVariable Integer id) {
+    public String detail(@PathVariable(name = "id") Integer id) {
         // URL에서 받은 id 값을 사용해서 특정 게시글 상세보기
         // 실제로는 이 id로 데이터베이스에서 게시글을 조회해야 함
         return "board/detail";

@@ -1,10 +1,13 @@
 package com.tenco.blog.repository;
 
+import com.tenco.blog.model.Board;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 // @RequiredArgsConstructor: final 필드에 대한 생성자를 자동 생성
 // 의존성 주입을 위한 Lombok 어노테이션
@@ -36,5 +39,17 @@ public class BoardNativeRepository {
         // executeUpdate: INSERT, UPDATE, DELETE 쿼리 실행
         // SELECT는 executeQuery 사용
         query.executeUpdate();
+    }
+
+    // 게시글 목록 조회 메서드
+    public List<Board> findAll(){
+        // createNativeQuery의 두 번째 매개변수: 결과를 매핑할 엔티티 클래스
+        // Board.class를 지정하면 쿼리 결과를 Board 객체로 자동 변환
+        Query query = em.createNativeQuery("select * from board_tb order by id desc", Board.class);
+
+        // getResultList(): 여러 행의 결과를 List로 반환
+        // getSingleResult(): 단일 결과만 반환 (한 개의 데이터만 있을 때)
+        // order by id desc: 최신글이 위로 오도록 내림차순 정렬
+        return query.getResultList();
     }
 }
