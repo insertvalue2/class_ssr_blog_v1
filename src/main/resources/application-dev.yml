@@ -1,0 +1,15 @@
+server:
+  servlet:
+    encoding:
+      charset: utf-8
+      force: true
+  port: 8080
+
+# 2칸 공백, 탭키 절대 사용 금지!
+# 로그 설정 (개발환경용)
+# 로그 레벨의 개념
+# ERROR > WARN > INFO > DEBUG > TRACE
+logging:
+  level:
+    root: INFO           # 모든 라이브러리는 INFO 이상만 출력
+    com.example: DEBUG   # 내 프로젝트는 DEBUG 이상 모두 출력    
