@@ -68,4 +68,51 @@ public class BoardNativeRepository {
         // 실무에서는 try-catch 또는 Optional을 사용한 예외 처리 필요
         return (Board) query.getSingleResult();
     }
+
+    // 특정 게시글 삭제 메서드
+    @Transactional
+    public void deleteById(int id) {
+        // DELETE 쿼리: 특정 ID의 게시글을 데이터베이스에서 완전히 제거
+        // WHERE 조건 없이 DELETE를 실행하면 모든 데이터가 삭제되므로 주의 필요
+        Query query = em.createNativeQuery("delete from board_tb where id = ?");
+
+        // 파라미터 바인딩: SQL Injection 공격 방지
+        // 직접 문자열 연결 (예: "delete from board_tb where id = " + id)은 위험함
+        query.setParameter(1, id);
+
+        // executeUpdate(): INSERT, UPDATE, DELETE 쿼리 실행
+        // 반환값: 영향받은 행의 개수 (삭제된 행의 개수)
+        // SELECT 쿼리는 executeQuery() 사용
+        query.executeUpdate();
+
+        // 트랜잭션 처리: @Transactional에 의해 자동으로 커밋/롤백 처리
+        // 성공시 커밋, 예외 발생시 롤백하여 데이터 일관성 보장
+    }
+
+    // 게시글 수정 메서드
+    @Transactional
+    public void updateById(int id, String title, String content, String username) {
+        // UPDATE 쿼리: 특정 조건의 데이터를 수정
+        // SET 절: 변경할 컬럼과 새로운 값들을 지정
+        // WHERE 절: 수정할 대상을 특정 (반드시 포함해야 함)
+        Query query = em.createNativeQuery(
+                "UPDATE board_tb SET title=?, content=?, username=? WHERE id=? "
+        );
+
+        // 파라미터 바인딩: SQL Injection 방지
+        // 순서대로 ?에 값이 바인딩됨 (1번부터 시작)
+        query.setParameter(1, title);    // 첫 번째 ? → title
+        query.setParameter(2, content);  // 두 번째 ? → content
+        query.setParameter(3, username); // 세 번째 ? → username
+        query.setParameter(4, id);       // 네 번째 ? → id (WHERE 조건)
+
+        // executeUpdate(): UPDATE, INSERT, DELETE 쿼리 실행
+        // 반환값: 수정된 행의 개수 (보통 1개 또는 0개)
+        int updatedRows = query.executeUpdate();
+
+        // 실무에서는 수정된 행의 개수를 확인하여 성공 여부 판단
+        // if (updatedRows == 0) { throw new EntityNotFoundException("게시글을 찾을 수 없습니다"); }
+    }
+
+
 }

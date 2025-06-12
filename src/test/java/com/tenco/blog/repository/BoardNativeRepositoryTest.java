@@ -93,4 +93,49 @@ public class BoardNativeRepositoryTest {
         Assertions.assertThat(board.getId()).isEqualTo(1);
     }
 
+    @Test
+    public void deleteById_test() {
+        // given
+        int id = 1;
+
+        // when - 게시글 pk 1을 삭제 요청 (샘플 데이터 4개에서 3개로)
+        // 즉, deleteById() 메서드를 실행 시켜 봄 
+        boardNativeRepository.deleteById(id);
+        
+        // then
+        // deleteById() 메서드가 정상 동작해서 예상 결과값이 맞는가 확인
+        List<Board> boardList = boardNativeRepository.findAll();
+        Assertions.assertThat(boardList.size()).isEqualTo(3);
+    }
+
+    // 게시글 수정 기능 테스트
+    @Test
+    public void updateById_test(){
+        // given: 수정할 데이터 준비
+        // data.sql에 의해 id=1인 게시글이 존재한다고 가정
+        int id = 1;
+        String title = "제목수정1";      // 기존: "제목1" → 수정: "제목수정1"
+        String content = "내용수정1";    // 기존: "내용1" → 수정: "내용수정1"
+        String username = "bori";       // 기존: "ssar" → 수정: "bori"
+
+        // when: (방금 만들었던) 실제 수정 실행
+        boardNativeRepository.updateById(id, title, content, username);
+
+        // then: 수정 결과 검증
+        // 수정 후 다시 조회하여 변경사항이 올바르게 적용되었는지 확인
+        Board board = boardNativeRepository.findById(id);
+
+        // 디버깅용 출력: 수정된 게시글 전체 정보 확인
+        System.out.println("updateById_test/board : " + board);
+
+        // AssertJ를 사용한 검증: 각 필드가 예상값과 일치하는지 확인
+        Assertions.assertThat(board.getTitle()).isEqualTo("제목수정1");
+        Assertions.assertThat(board.getContent()).isEqualTo("내용수정1");
+        Assertions.assertThat(board.getUsername()).isEqualTo("bori");
+
+        // 추가 검증: 수정되지 않아야 할 필드들 확인
+        Assertions.assertThat(board.getId()).isEqualTo(1);           // ID는 변경되지 않음
+        Assertions.assertThat(board.getCreatedAt()).isNotNull();     // 생성시간은 유지됨
+    }
+
 }
